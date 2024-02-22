@@ -1,0 +1,10 @@
+.myhover:hover {
+    background-color: #0000ff;
+    border-color: aliceblue;
+}
+
+#barChart, #circleChart {
+max-width: 100%; /* Ensure the charts don't exceed their container's width */
+height: auto;   /* Allow the charts to resize proportionally */
+margin: 0 auto; /* Center the charts within their container */
+}

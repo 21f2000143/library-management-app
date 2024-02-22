@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to central library</title>
+  <style>
+    body {
+      padding-top: 16px;/
+    }
+  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">Librarian's Dashboard</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse d-flex justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('route.librarian_dashboard')}}">dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('route.stats')}}">stats</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('route.add_books')}}">books</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('route.requests')}}">requests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('route.logout')}}">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container mt-5">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    {% if category =='error' %}
+    <div class="alert alert-danger alter-dismissible fade show row justify-content-evenly w-25" role="alert">
+      <div class="col-10">
+        {{ message }}
+      </div>
+      <div class="col-2">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    </div>
+    {% else %}
+    <div class="alert alert-success alter-dismissible fade show row justify-content-evenly w-25" role="alert">
+      <div class="col-8">
+        {{ message }}
+      </div>
+      <div class="col-2">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <header class="mb-4">
+      <div class="container text-center">
+        <div class="row">
+          {% if search_by %}
+          <div class="col">
+            <h3>Search results for <p class="text-info">{{ search_by }}</p>
+            </h3>
+          </div>
+          {% else %}
+          <div class="col">
+            <h3>All Sections to view</h3>
+          </div>
+          {% endif %}
+          <div class="col-6">
+            <form method="GET">
+              <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Search term" aria-label="Search term"
+                  aria-describedby="button-addon">
+                <button class="btn btn-light" type="submit" id="button-addon">Search</button>
+              </div>
+            </form>
+          </div>
+          <div class="col">
+            <div class="btn-group dropend">
+              <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                filter by
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{url_for('route.librarian_dashboard',  param=" today")}}">today</a>
+                </li>
+                <li><a class="dropdown-item" href="{{url_for('route.librarian_dashboard',  param=" last week")}}">last
+                    week</a></li>
+                <li><a class="dropdown-item" href="{{url_for('route.librarian_dashboard',  param=" last month")}}">last
+                    month</a></li>
+                <li><a class="dropdown-item" href="{{url_for('route.librarian_dashboard',  param=" last year")}}">last
+                    year</a></li>
+              </ul>
+            </div>
+            <a href="{{url_for('route.librarian_dashboard')}}" class="btn btn-light">clear all</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    <header class="mb-3">
+      {% if g.params %}
+      {% for param in g.params %}
+      <span class="badge rounded-pill text-bg-light">{{param}} <a
+          href="{{url_for('route.librarian_dashboard', remove=param)}}" style="cursor: pointer;">&Cross;</a></span>
+      {% endfor %}
+      {% endif %}
+    </header>
+    <div class="row gap-3">
+      {% if sections|length > 0 %}
+      {% for section in sections %}
+      <div class="col-md-3">
+        <div class="card border-primary shadow-lg rounded-5">
+          <div class="card-body">
+            <div class="card-body">
+              <p class="card-title"><b>Section:</b> {{section.name}}</p>
+              <p class="card-title"><b>Date:</b> {{ section.date.strftime('%Y-%m-%d') }}</p>
+              <p class="card-title"><b>description:</b> {{ section.description }}</p>
+              <div class="d-flex justify-content-around">
+                <a href="{{url_for('route.add_books')}}" class="btn btn-primary">Add Book</a>
+                <a href="{{url_for('route.add_books')}}" class="btn btn-info" data-bs-toggle="modal"
+                  data-bs-target="{{'#'+section.name}}">Edit</a>
+                <div class="modal fade" id="{{section.name}}" data-bs-backdrop="static" data-bs-keyboard="false"
+                  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-primary shadow-lg rounded-5">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">updating section</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form class="page" action="{{url_for('route.update_section', id=section.id)}}" method="POST">
+                          <div class="form-group">
+                            <input type="hidden" name="id" value="{{section.id}}">
+                            <label for="title">Title</label>
+                            <input type="text" id="title" name="title" class="form-control"
+                              placeholder="{{section.name}}" maxlength="20" required />
+                            <br />
+                            <label for="date">Date</label>
+                            <input type="date" id="date" name="date" class="form-control"
+                              value="{{section.date.strftime('%Y-%m-%d')}}" required />
+                            <br />
+                            <label for="description">Description:</label>
+                            <textarea type="text" id="description" name="description" class="form-control"
+                              maxlength="50" required>{{section.description}}</textarea>
+                          </div>
+                      </div>
+                      <div class="modal-footer d-flex justify-content-around">
+                        <button type="submit" class="btn btn-success">update</button>
+                        <a href="{{url_for('route.delete_section', id=section.id)}}" class="btn btn-danger"
+                          onclick="confirm('Are you sure?')">delete</a>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p class="text-warning">No sections found</p>
+      {% endif %}
+      <div class="col-md-2 d-flex align-items-center">
+        <!-- Button trigger modal -->
+        <a href="" class="myhover" data-bs-toggle="modal" data-bs-target="#staticBackdrop2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50">
+            <circle cx="25" cy="25" r="20" stroke="blue" stroke-width="2" fill="white" />
+            <line x1="25" y1="15" x2="25" y2="35" style="stroke:blue;stroke-width:2" />
+            <line x1="15" y1="25" x2="35" y2="25" style="stroke:blue;stroke-width:2" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-primary shadow-lg rounded-5">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Add New Section</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="login" class="page" method="POST">
+            <div class="form-group">
+              <label for="title">Title</label>
+              <input type="text" id="title" name="title" class="form-control" maxlength="20" required />
+              <br />
+              <label for="date">Date</label>
+              <input type="date" id="date" name="date" class="form-control" required />
+              <br />
+              <label for="description">Description:</label>
+              <textarea id="description" name="description" class="form-control" maxlength="50" required></textarea>
+            </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-around">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">cancel</button>
+          <button type="submit" class="btn btn-success">add</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Embedded PDF Reader</title>
+<style>
+  /* Center the embedded PDF */
+  .pdf-container {
+    width: 100%;
+    max-width: 794px; /* A4 width in pixels at 72 DPI */
+    margin: 0 auto; /* Center horizontally */
+  }
+  /* Set height based on A4 aspect ratio (297 / 210) */
+  .pdf-container embed {
+    width: 100%;
+    height: 1122px; /* A4 height in pixels at 72 DPI */
+  }
+</style>
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+</head>
+<body>
+
+<div class="pdf-container">
+  <embed title="Embedded PDF" object-position="0 0", object-fit="scale-down", src="{{ url_for('route.get_pdf', id=id)}}" type="application/pdf" />
+</div>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %} User Login Page {% endblock %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card w-25 border-primary shadow-lg">
+        <div class="card-body">
+            <form id="login" class="page" method="POST">
+                <h3 class="input">User Login</h3>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter Username" size="10" />
+                    <br />
+                    <label for="password">Password</label>
+                    <input type="password" id="password_id" name="password" class="form-control" placeholder="Enter Password" size="15" />
+                    <br />
+                    <div class="d-flex justify-content-around">
+                        <button class="btn btn-info bg-opacity-10" type="submit">Login</button>
+                        <a href="{{ url_for('route.signup') }}" class="btn btn-warning bg-opacity-10" >Register</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

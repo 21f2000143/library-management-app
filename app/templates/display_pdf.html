@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Display PDF</title>
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+</head>
+<body>
+    <h1>PDF Pages</h1>
+    <div id="pdf-container"></div>
+
+    <script>
+        // Load and render the PDF using PDF.js
+        const pdfPath = '/path_to_your_pdf.pdf';
+        const container = document.getElementById('pdf-container');
+
+        pdfjsLib.getDocument(pdfPath).promise.then(pdf => {
+            for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+                pdf.getPage(pageNumber).then(page => {
+                    const scale = 1.5;
+                    const viewport = page.getViewport({ scale });
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    container.appendChild(canvas);
+
+                    page.render({
+                        canvasContext: context,
+                        viewport
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
